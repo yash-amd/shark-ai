@@ -8,6 +8,10 @@ name: Release Mistral nemo instruct Benchmarking Tests
 
 on:
   workflow_dispatch:
+  pull_request:
+  push:
+   branches:
+     - main
   schedule:
     # Weekdays at 11:00 AM UTC = 03:00 AM PST / 04:00 AM PDT
     - cron: "30 9 * * 1-5"
@@ -72,12 +76,14 @@ jobs:
           pip freeze | grep -E 'iree|shark' > $(pwd)/output_artifacts/version.txt
 
       - name: Run export and compile
+        id: export_compile
         run: |
           bash scripts/export_and_compile.sh \
              --irpa /shark-dev/mistral_instruct/instruct.irpa \
              --dtype mistral_fp8 2>&1 | tee "$(pwd)/output_artifacts/export_and_compilation.log"
 
       - name: Run IREE Benchmark Module
+        if: ${{ steps.export_compile.outcome == 'success' }}
         run: |
           bash scripts/run_iree_benchmark.sh  \
              --parameters /shark-dev/mistral_instruct/instruct.irpa \
