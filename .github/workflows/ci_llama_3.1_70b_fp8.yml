@@ -158,7 +158,6 @@ jobs:
             fi
 
       - name: Deploy to GitHub Pages
-        if: always()
         uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
         with:
           github_token: ${{ secrets.SHARK_PLATFORM_GH_TOKEN }}
@@ -190,7 +189,6 @@ jobs:
   push_logs:
     name: "Push log llama 70B FP8"
     needs: [ test_llama_large ]
-    if: always()
     runs-on: ubuntu-24.04
     steps:
     - name: Download log artifacts
